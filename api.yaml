@@ -1,0 +1,377 @@
+openapi: 3.0.3
+info:
+  title: Notes API
+  description: API documentation for Notes Management
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+  - url: http://localhost:4000
+
+paths:
+  /api/notes/create/{userId}:
+    post:
+      tags:
+        - Create Note
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user creating the note
+          schema:
+            type: string
+          example: "6592c0153b36680a82d449bb"
+      requestBody:
+        description: Creating a new note with a Title and some Content for it
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - content
+              properties:
+                title:
+                  type: string
+                  example: Today is a Good Day
+                content:
+                  type: string
+                  example: The Weather seems good for a day out to go to a picnic
+      responses:
+        "200":
+          description: Note Created
+          content:
+            application/json:
+              example:
+                error: false
+                message: "Note Created Successfully"
+                data:
+                  id: 1
+                  title: Today is a Good Day
+                  content: The Weather seems good for a day out to go to a picnic
+        "404":
+          description: Server Error
+          content:
+            application/json:
+              example:
+                error: true
+
+  /api/notes/getNote/{id}:
+    get:
+      tags:
+        - Get Note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the note to get
+          schema:
+            type: string
+          example: "6592c42b55529b0a685b6554"
+      responses:
+        "200":
+          description: Got the Note
+          content:
+            application/json:
+              example:
+                error: false
+                message: "Note Found Successfully"
+                data:
+                  title: Today is a Good Day1
+                  content: The Weather seems good for a day out to go to a picnic2
+        "404":
+          description: Server Error
+          content:
+            application/json:
+              example:
+                error: true
+
+  /api/notes/update/{id}:
+    put:
+      tags:
+        - Update Note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the note to be updated
+          schema:
+            type: string # Assuming your noteId is a string, adjust if it's a different type
+          example: "6592c8447fbd0ad124425e53" # Manually input the note ID
+      requestBody:
+        description: Updating an existing note with a new Title and Content
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated Title
+                content:
+                  type: string
+                  example: Updated Content
+      responses:
+        "200":
+          description: Note Updated
+          content:
+            application/json:
+              example:
+                error: false
+                message: "Note Updated Successfully"
+                data:
+                  _id: "6592c0153b36680a82d449bb"
+                  title: Updated Title
+                  content: Updated Content
+                  userRef: "userObjectId"
+                  createdAt: "2024-01-01T13:37:25.663Z"
+                  updatedAt: "2024-01-01T13:37:25.663Z"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              example:
+                error: true
+                message: "Note not found"
+        "403":
+          description: User cannot perform actions on this note
+          content:
+            application/json:
+              example:
+                error: true
+                message: "User can perform actions only on their own notes"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                error: true
+                message: "Internal Server Error"
+
+  /api/notes/delete/{id}:
+    delete:
+      tags:
+        - Delete Note
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The ID of the note to be deleted
+          schema:
+            type: string # Assuming your noteId is a string, adjust if it's a different type
+          example: "6592c8447fbd0ad124425e53" # Manually input the note ID
+      responses:
+        "200":
+          description: Note Deleted
+          content:
+            application/json:
+              example:
+                error: false
+                message: "Note Deleted Successfully"
+        "404":
+          description: Note not found
+          content:
+            application/json:
+              example:
+                error: true
+                message: "Note not found"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                error: true
+                message: "Internal Server Error"
+
+  /api/user/login:
+    post:
+      summary: Used to Login a User
+      tags:
+        - Login User
+      requestBody:
+        description: Logging in with User Details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  example: hero
+                email:
+                  type: string
+                  example: hero@gmail.com
+                password:
+                  type: string
+                  example: hero
+      responses:
+        "200":
+          description: Login Success
+          content:
+            application/json:
+              example:
+                error: false
+                message: "Login Success"
+                user:
+                  _id: "6592c0153b36680a82d449bb"
+                  username: hero
+                  email: hero@gmail.com
+                  profilePic: "https://cdn3.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.jpg"
+                  isAdmin: false
+                  createdAt: "2024-01-01T13:37:25.663Z"
+                  updatedAt: "2024-01-01T13:37:25.663Z"
+                  __v: 0
+          headers:
+            Set-Cookie:
+              description: Contains the authentication token for the User when logged in
+              schema:
+                type: string
+                example: auth_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NTkyYzAxNTNiMzY2ODBhODJkNDQ5YmIiLCJ1c2VyIjp7Il9pZCI6IjY1OTJjMDE1M2IzNjY4MGE4MmQ0NDliYiIsInVzZXJuYW1lIjoiaGVybyIsImVtYWlsIjoiaGVyb0BnbWFpbC5jb20iLCJwcm9maWxlUGljIjoiaHR0cHM6Ly9jZG4zLnZlY3RvcnN0b2NrLmNvbS9pLzEwMDB4MTAwMC8zMC85Ny9mbGF0LWJ1c2luZXNzLW1hbi11c2VyLXByb2ZpbGUtYXZhdGFyLWljb24tdmVjdG9yLTQzMzMwOTcuanBnIiwiaXNBZG1pbiI6ZmFsc2UsImNyZWF0ZWRBdCI6IjIwMjQtMDEtMDFUMTM6Mzc6MjUuNjYzWiIsInVwZGF0ZWRBdCI6IjIwMjQtMDEtMDFUMTM6Mzc6MjUuNjYzWiIsIl9fdiI6MH0sImlhdCI6MTcwNDExNjQxNX0.arTmfuEW5b7vch0TDki2zIeX7qsc_MyvGVwFVYjoqMc; Path=/;
+        "404":
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: true
+                message: "User not found"
+        "401":
+          description: Credentials don't match
+          content:
+            application/json:
+              example:
+                error: true
+                message: "Credentials don't match"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                error: true
+                message: "Internal Server Error"
+
+  /api/user/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Register User
+      requestBody:
+        description: Registering a new user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  example: hero
+                email:
+                  type: string
+                  example: hero@gmail.com
+                password:
+                  type: string
+                  example: hero
+      responses:
+        "200":
+          description: User registered successfully
+          content:
+            application/json:
+              example:
+                error: false
+                message: Register Success
+                data:
+                  username: hero
+                  email: hero@gmail.com
+                  password: "$2a$10$qOPM230CrsqueieFObVk4eJB2cGr6W8ib5SbfqPkVLBFsnZ1vsUHu"
+                  profilePic: "https://cdn3.vectorstock.com/i/1000x1000/30/97/flat-business-man-user-profile-avatar-icon-vector-4333097.jpg"
+                  isAdmin: false
+                  _id: "6592c0153b36680a82d449bb"
+                  createdAt: "2024-01-01T13:37:25.663Z"
+                  updatedAt: "2024-01-01T13:37:25.663Z"
+                  __v: 0
+        "404":
+          description: User already registered
+          content:
+            application/json:
+              example:
+                error: true
+                message: User already registered
+        "201":
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                error: true
+                message: Internal Server Error
+
+  /api/user/delete/{userId}:
+    delete:
+      tags:
+        - Delete User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to be deleted
+          schema:
+            type: string # Assuming your userId is a string, adjust if it's a different type
+          example: "6592c0153b36680a82d449bb" # Manually input the user ID
+      responses:
+        "200":
+          description: User and Notes Deleted
+          content:
+            application/json:
+              example:
+                error: false
+                message: "Account and all related Notes Deleted Successfully"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              example:
+                error: true
+                message: "User not found"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              example:
+                error: true
+                message: "Internal Server Error"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        content:
+          type: string
